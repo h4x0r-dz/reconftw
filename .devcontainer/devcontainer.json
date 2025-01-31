@@ -1,0 +1,7 @@
+{
+  "tasks": {
+    "test": "pip install -r requirements.txt && make test",
+    "build": "./install.sh",
+    "launch": "./reconftw.sh -d paypal.com -r"
+  }
+}
