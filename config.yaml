@@ -1,0 +1,12 @@
+# Global configuration
+# This can be expanded later
+
+# Example: Default logging level
+# log_level: "INFO" # This will be superseded by the framework setting
+
+framework:
+  max_parallel_plugins: 2
+  log_level: "INFO" # Can be "DEBUG", "INFO", "WARNING", "ERROR"
+
+tui:
+  enable_colors: true

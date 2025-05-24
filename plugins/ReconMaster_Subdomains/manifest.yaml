@@ -1,0 +1,254 @@
+plugin:
+  name: "ReconMaster_Subdomains"
+  version: "0.3.0" # Updated version
+  author: "Framework AI"
+  description: "Comprehensive subdomain enumeration using passive, active, recursive, scraping, and analytics techniques."
+  type: "reconnaissance"
+
+dependencies:
+  tools:
+    - "subfinder"
+    - "assetfinder" 
+    - "puredns"
+    - "dnsx"
+    - "httpx"
+    - "massdns" 
+    - "anew"
+    - "unfurl"
+    - "jq" 
+    - "github-subdomains" 
+    - "gitlab-subdomains" 
+    - "crtsh_go" 
+    - "tlsx" 
+    - "gotator" 
+    - "ripgen"  
+    - "regulator" 
+    - "hakip2host" 
+    # New for v0.3.0
+    - "dsieve"
+    - "katana"
+    - "analyticsrelationships"
+
+provides:
+  - "resolved_subdomains_file" 
+  - "live_web_subdomains_file" 
+  - "raw_subdomains_files_list" 
+  - "dns_records_json_file" 
+  - "web_probing_full_info_file" # For httpx -json output in scraping
+
+parameters:
+  - name: "target_domain"
+    description: "The primary domain target for subdomain enumeration."
+    type: "string"
+    default: ""
+  - name: "out_of_scope_file" 
+    description: "Path to a file containing out-of-scope subdomains (one per line)."
+    type: "string"
+    default: ""
+  - name: "in_scope_file" 
+    description: "Path to a file containing additional in-scope subdomains."
+    type: "string"
+    default: ""
+  
+  # --- Technique Toggles ---
+  # Passive (existing)
+  - name: "enable_passive_enum"
+    description: "Enable passive subdomain enumeration techniques."
+    type: "boolean"
+    default: true
+  - name: "enable_crt_enum"
+    description: "Enable crt.sh enumeration."
+    type: "boolean"
+    default: true
+  - name: "enable_tls_enum"
+    description: "Enable TLS certificate based subdomain enumeration."
+    type: "boolean"
+    default: true
+  # Active Core (existing)
+  - name: "enable_active_resolve" 
+    description: "Enable active DNS resolution of passively found subdomains."
+    type: "boolean"
+    default: true
+  # Active Advanced (existing)
+  - name: "enable_noerror_enum"
+    description: "Enable No-Error based subdomain enumeration (dnsx -noerror)."
+    type: "boolean"
+    default: true
+  - name: "enable_bruteforce_enum"
+    description: "Enable dictionary-based bruteforce subdomain enumeration (puredns bruteforce)."
+    type: "boolean"
+    default: true
+  - name: "enable_permutation_enum"
+    description: "Enable permutation-based subdomain enumeration (gotator/ripgen)."
+    type: "boolean"
+    default: true
+  - name: "enable_regex_permutation_enum"
+    description: "Enable regex-based permutation enumeration (regulator)."
+    type: "boolean"
+    default: false 
+  - name: "enable_dns_record_enum"
+    description: "Enable enumeration based on various DNS records (A, CNAME, NS, MX, etc.)."
+    type: "boolean"
+    default: true
+  # New v0.3.0 Techniques
+  - name: "enable_recursive_passive_enum"
+    description: "Enable recursive passive enumeration on found subdomains."
+    type: "boolean"
+    default: true
+  - name: "enable_recursive_brute_enum"
+    description: "Enable recursive bruteforce enumeration on found subdomains."
+    type: "boolean"
+    default: true
+  - name: "enable_scraping_enum"
+    description: "Enable web scraping for subdomains using Katana."
+    type: "boolean"
+    default: true
+  - name: "enable_analytics_enum"
+    description: "Enable analytics relationship-based subdomain discovery."
+    type: "boolean"
+    default: true
+
+  # --- Paths & Configs ---
+  # General
+  - name: "resolvers_file"
+    description: "Path to the resolvers list for DNS resolution."
+    type: "string"
+    default: "config/resolvers.txt" 
+  - name: "trusted_resolvers_file"
+    description: "Path to the trusted resolvers list for puredns."
+    type: "string"
+    default: "config/resolvers_trusted.txt"
+  - name: "deep_scan_mode" 
+    description: "Enable deeper, more time-consuming scans (affects wordlists, limits, katana depth)."
+    type: "boolean"
+    default: false
+  # Subfinder (existing)
+  - name: "github_tokens_file" 
+    description: "Path to GitHub tokens file."
+    type: "string"
+    default: "~/.config/reconftw/github_tokens.txt" 
+  - name: "gitlab_tokens_file" 
+    description: "Path to GitLab tokens file."
+    type: "string"
+    default: "~/.config/reconftw/gitlab_tokens.txt" 
+  - name: "subfinder_timeout"
+    description: "Timeout for subfinder enumeration (in minutes)."
+    type: "integer"
+    default: 30 
+  - name: "subfinder_config_file" 
+    description: "Path to subfinder config file (YAML)."
+    type: "string"
+    default: "" 
+  - name: "subfinder_sources" 
+    description: "Comma-separated list of sources for subfinder."
+    type: "string"
+    default: "" 
+  - name: "subfinder_all_sources" 
+    description: "Use all subfinder sources."
+    type: "boolean"
+    default: true 
+  # CRT (existing)
+  - name: "crt_limit"
+    description: "Limit for crt.sh results."
+    type: "integer"
+    default: 5000 
+  # Puredns / Massdns (existing and new)
+  - name: "massdns_path" 
+    description: "Path to the massdns executable."
+    type: "string"
+    default: "massdns"
+  - name: "puredns_public_limit"
+    description: "Rate limit for puredns with public resolvers (domains/second)."
+    type: "integer"
+    default: 2000
+  - name: "puredns_trusted_limit"
+    description: "Rate limit for puredns with trusted resolvers (domains/second)."
+    type: "integer"
+    default: 10000
+  - name: "puredns_wildcardtest_limit"
+    description: "Limit for puredns wildcard tests (domains/second)."
+    type: "integer"
+    default: 50
+  - name: "puredns_wildcardbatch_limit"
+    description: "Wildcard batch size for puredns."
+    type: "integer"
+    default: 1000000
+  # Wordlists (existing and new)
+  - name: "subs_wordlist"
+    description: "Path to wordlist for bruteforce/noerror (normal mode)."
+    type: "string"
+    default: "config/wordlists/subdomains_common.txt" 
+  - name: "subs_wordlist_big"
+    description: "Path to larger wordlist for bruteforce/noerror (deep_scan_mode)."
+    type: "string"
+    default: "config/wordlists/subdomains_big.txt"
+  - name: "recursive_brute_wordlist" # New for v0.3.0
+    description: "Path to wordlist for recursive bruteforce."
+    type: "string"
+    default: "config/wordlists/subdomains_recursive_brute.txt" # Or could reuse subs_wordlist
+  # Permutations (existing)
+  - name: "permutations_list_file"
+    description: "Path to wordlist for generating permutations."
+    type: "string"
+    default: "config/wordlists/permutations_common.txt"
+  - name: "permutation_option_tool"
+    description: "Tool for generating permutations ('gotator' or 'ripgen')."
+    type: "string"
+    default: "gotator"
+  - name: "gotator_flags"
+    description: "Flags for gotator (e.g., -silent -md -depth 2)."
+    type: "string"
+    default: "-silent -md" 
+  - name: "permutations_character_limit"
+    description: "Character limit for permutations list (e.g., '1M' for 1MB)."
+    type: "string"
+    default: "1M"
+  # Regex Permutations (existing)
+  - name: "regulator_script_path"
+    description: "Path to the regulator/main.py script."
+    type: "string"
+    default: "tools/regulator/main.py" 
+  - name: "regulator_venv_python"
+    description: "Path to python executable within regulator's virtual environment."
+    type: "string"
+    default: "tools/regulator/venv/bin/python3"
+  # DNS Record Enum (existing dnsx)
+  - name: "dnsx_wildcard_filter_level" 
+    description: "Wildcard filter level for dnsx."
+    type: "integer"
+    default: 3
+  # HTTPX (existing, also used in scraping)
+  - name: "httpx_threads"
+    description: "Number of threads for httpx."
+    type: "integer"
+    default: 50
+  - name: "httpx_timeout"
+    description: "Timeout for httpx probes (seconds)."
+    type: "integer"
+    default: 10
+  - name: "httpx_retries"
+    description: "Number of retries for httpx."
+    type: "integer"
+    default: 2
+  - name: "httpx_ratelimit" # New for v0.3.0, for scraping primarily
+    description: "Rate limit for httpx requests per second."
+    type: "integer"
+    default: 150
+  # Recursive (new v0.3.0)
+  - name: "deep_recursive_passive_limit"
+    description: "Max number of subdomains (levels deep) to use for passive recursive scan."
+    type: "integer"
+    default: 25
+  # Scraping (new v0.3.0)
+  - name: "deep_limit_for_scraping"
+    description: "If total resolved subdomains exceed this, scraping might be limited unless deep_scan_mode is true."
+    type: "integer"
+    default: 500
+  - name: "katana_depth"
+    description: "Crawling depth for Katana (-d)."
+    type: "integer"
+    default: 2 # Can be 3 if deep_scan_mode
+  - name: "katana_threads"
+    description: "Number of concurrent threads for Katana (-c)."
+    type: "integer"
+    default: 10

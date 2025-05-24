@@ -1,0 +1,261 @@
+tools:
+  - name: "yq" 
+    version: "any" 
+    check_command: "command -v yq"
+    install_command: "echo 'yq should be pre-installed. If not, please install manually: https://github.com/mikefarah/yq/#install'"
+    tags: ["utility", "core"]
+
+  - name: "subfinder"
+    version: "any"
+    check_command: "command -v subfinder"
+    install_command: "go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"
+    tags: ["subdomain_enumeration", "recon", "go_install"]
+
+  - name: "httpx" 
+    version: "any"
+    check_command: "command -v httpx"
+    install_command: "go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest"
+    tags: ["web_probing", "recon", "go_install"]
+
+  - name: "nuclei"
+    version: "any"
+    check_command: "command -v nuclei"
+    install_command: "go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest"
+    tags: ["vulnerability_scanning", "recon", "go_install"]
+
+  - name: "ffuf"
+    version: "any"
+    check_command: "command -v ffuf"
+    install_command: "go install -v github.com/ffuf/ffuf@latest"
+    tags: ["web_fuzzing", "recon", "go_install"]
+
+  - name: "amass"
+    version: "any"
+    check_command: "command -v amass"
+    install_command: "go install -v github.com/owasp-amass/amass/v4/cmd/amass@master"
+    tags: ["subdomain_enumeration", "recon", "dns", "go_install"]
+
+  - name: "assetfinder" 
+    version: "any"
+    check_command: "command -v assetfinder"
+    install_command: "go install -v github.com/tomnomnom/assetfinder@latest"
+    tags: ["subdomain_enumeration", "recon", "go_install"]
+
+  - name: "dialog"
+    version: "any"
+    check_command: "command -v dialog"
+    install_command: "sudo apt-get update && sudo apt-get install -y dialog"
+    tags: ["utility", "tui", "apt"]
+
+  - name: "whois"
+    version: "any"
+    check_command: "command -v whois"
+    install_command: "sudo apt-get update && sudo apt-get install -y whois"
+    tags: ["osint", "utility", "apt"]
+
+  - name: "curl"
+    version: "any"
+    check_command: "command -v curl"
+    install_command: "sudo apt-get update && sudo apt-get install -y curl"
+    tags: ["utility", "web", "apt"]
+
+  - name: "jq"
+    version: "any"
+    check_command: "command -v jq"
+    install_command: "sudo apt-get update && sudo apt-get install -y jq"
+    tags: ["utility", "json", "apt"]
+
+  - name: "python3"
+    version: "any" 
+    check_command: "command -v python3 && python3 --version"
+    install_command: "sudo apt-get update && sudo apt-get install -y python3 python3-pip python3-venv git" # Added git for cloning
+    tags: ["utility", "scripting", "apt"]
+
+  - name: "gitdorks_go"
+    version: "any"
+    check_command: "command -v gitdorks_go"
+    install_command: "go install -v github.com/damit5/gitdorks_go@latest" 
+    tags: ["osint", "github", "dorking", "go_install"]
+
+  - name: "enumerepo"
+    version: "any"
+    check_command: "command -v enumerepo"
+    install_command: "go install -v github.com/trickest/enumerepo@latest"
+    tags: ["osint", "github", "recon", "go_install"]
+
+  - name: "gitleaks"
+    version: "any"
+    check_command: "command -v gitleaks"
+    install_command: "go install -v github.com/gitleaks/gitleaks/v8@latest"
+    tags: ["secrets", "git", "osint", "github", "go_install"]
+
+  - name: "trufflehog"
+    version: "any"
+    check_command: "command -v trufflehog"
+    install_command: "go install -v github.com/trufflesecurity/trufflehog/v3@latest"
+    tags: ["secrets", "git", "osint", "github", "go_install"]
+
+  - name: "metafinder" 
+    version: "any"
+    check_command: "command -v metafinder"
+    install_command: "pip3 install metafinder" 
+    tags: ["osint", "metadata", "python"]
+
+  - name: "anew" 
+    version: "any"
+    check_command: "command -v anew"
+    install_command: "go install -v github.com/tomnomnom/anew@latest"
+    tags: ["utility", "recon", "go_install"]
+  
+  - name: "unfurl" 
+    version: "any"
+    check_command: "command -v unfurl"
+    install_command: "go install -v github.com/tomnomnom/unfurl@latest"
+    tags: ["utility", "recon", "web", "go_install"]
+
+  - name: "porch-pirate"
+    version: "any"
+    check_command: "command -v porch-pirate"
+    install_command: "go install -v github.com/sudosammy/porch-pirate@latest"
+    tags: ["osint", "api", "leaks", "go_install"]
+
+  - name: "swaggerspy" 
+    version: "any"
+    check_command: "python3 --version" 
+    install_command: "echo 'SwaggerSpy is a script. Ensure Python3 is installed. Paths configured in plugin params.'"
+    tags: ["osint", "api", "leaks", "python", "script"]
+
+  - name: "emailfinder" 
+    version: "any"
+    check_command: "python3 --version" 
+    install_command: "echo 'emailfinder is a script. Ensure Python3 is installed. Paths configured in plugin params.'"
+    tags: ["osint", "email", "python", "script"]
+
+  - name: "leaksearch" 
+    version: "any"
+    check_command: "python3 --version" 
+    install_command: "echo 'LeakSearch is a script. Ensure Python3 is installed. Paths configured in plugin params.'"
+    tags: ["osint", "leaks", "python", "script"]
+
+  - name: "misconfig-mapper"
+    version: "any"
+    check_command: "command -v misconfig-mapper"
+    install_command: "go install -v github.com/YOUR_CORRECT_REPO/misconfig-mapper@latest" 
+    tags: ["osint", "misconfigs", "cloud", "go_install"]
+
+  - name: "spoofy" 
+    version: "any"
+    check_command: "python3 --version" 
+    install_command: "echo 'Spoofy is a script. Ensure Python3 is installed. Paths configured in plugin params.'"
+    tags: ["osint", "email", "spoofing", "python", "script"]
+
+  - name: "puredns"
+    version: "any"
+    check_command: "command -v puredns"
+    install_command: "go install -v github.com/d3mondev/puredns/v2@latest"
+    tags: ["dns", "recon", "go_install"]
+
+  - name: "dnsx"
+    version: "any"
+    check_command: "command -v dnsx"
+    install_command: "go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest"
+    tags: ["dns", "recon", "go_install"]
+
+  - name: "massdns" 
+    version: "any"
+    check_command: "command -v massdns"
+    install_command: "echo 'Attempting to install massdns via apt. If this fails, please install manually: https://github.com/blechschmidt/massdns' && sudo apt-get update && sudo apt-get install -y massdns"
+    tags: ["dns", "recon", "apt", "build_from_source"]
+
+  - name: "github-subdomains"
+    version: "any"
+    check_command: "command -v github-subdomains" 
+    install_command: "pip3 install github-subdomains" 
+    tags: ["subdomain_enumeration", "github", "python", "pip"]
+
+  - name: "gitlab-subdomains"
+    version: "any"
+    check_command: "command -v gitlab-subdomains" 
+    install_command: "pip3 install gitlab-subdomains" 
+    tags: ["subdomain_enumeration", "gitlab", "python", "pip"]
+
+  - name: "crtsh_go" 
+    version: "any"
+    check_command: "command -v crtsh_go"
+    install_command: "go install -v github.com/hdm/crtsh_go@latest" 
+    tags: ["subdomain_enumeration", "crtsh", "go_install"]
+  
+  - name: "tlsx"
+    version: "any"
+    check_command: "command -v tlsx"
+    install_command: "go install -v github.com/projectdiscovery/tlsx/cmd/tlsx@latest"
+    tags: ["tls", "recon", "go_install"]
+
+  - name: "gotator"
+    version: "any"
+    check_command: "command -v gotator"
+    install_command: "go install -v github.com/Josue87/gotator@latest" 
+    tags: ["dns", "recon", "permutations", "go_install"]
+
+  - name: "ripgen"
+    version: "any"
+    check_command: "command -v ripgen"
+    install_command: "go install -v github.com/Valeriene/ripgen@latest" 
+    tags: ["dns", "recon", "permutations", "go_install"]
+
+  - name: "regulator" 
+    version: "any"
+    check_command: "python3 --version" 
+    install_command: "echo 'Regulator is a script. Ensure Python3 is installed. Paths configured in plugin params.'"
+    tags: ["dns", "recon", "permutations", "python", "script"]
+
+  - name: "hakip2host"
+    version: "any"
+    check_command: "command -v hakip2host"
+    install_command: "go install -v github.com/hakluke/hakip2host@latest"
+    tags: ["dns", "recon", "utility", "go_install"]
+
+  - name: "dsieve"
+    version: "any"
+    check_command: "command -v dsieve"
+    install_command: "go install -v github.com/trickest/dsieve@latest"
+    tags: ["utility", "recon", "go_install"]
+
+  - name: "katana"
+    version: "any"
+    check_command: "command -v katana"
+    install_command: "go install -v github.com/projectdiscovery/katana/cmd/katana@latest"
+    tags: ["web", "scraping", "recon", "go_install"]
+
+  - name: "analyticsrelationships" 
+    version: "any"
+    check_command: "python3 --version" 
+    install_command: "echo 'analyticsrelationships is a script. Ensure Python3 is installed. Paths configured in plugin params or it should be in PATH.'"
+    tags: ["subdomain_enumeration", "analytics", "python", "script"]
+
+  - name: "wafw00f"
+    version: "any"
+    check_command: "command -v wafw00f"
+    install_command: "pip3 install wafw00f"
+    tags: ["web", "waf", "recon", "python", "pip"]
+
+  # New for FaviconIPLookup
+  - name: "favup_dependencies" # Manages cloning and venv setup for favUp.py
+    version: "any"
+    check_command: "[ -f tools/fav-up/favUp.py ] && [ -d tools/fav-up/venv ]" # Check if script and venv dir exist
+    # Ensure git is installed for cloning, python3-venv for creating venv
+    install_command: >
+      (sudo apt-get update && sudo apt-get install -y git python3-venv || true) && \
+      if [ ! -d "tools/fav-up" ]; then git clone https://github.com/pielco11/fav-up tools/fav-up; fi && \
+      if [ -f "tools/fav-up/requirements.txt" ]; then \
+        (if [ ! -d "tools/fav-up/venv" ]; then python3 -m venv tools/fav-up/venv; fi && \
+        tools/fav-up/venv/bin/pip3 install --upgrade pip && \
+        tools/fav-up/venv/bin/pip3 install -r tools/fav-up/requirements.txt); \
+      else echo "favUp requirements.txt not found, skipping pip install."; fi
+    tags: ["python_tool_setup", "recon", "osint"]
+    
+  - name: "nonexistenttool"
+    version: "1.0"
+    check_command: "command -v nonexistenttool_shouldfailcheck" 
+    install_command: "echo 'Attempting to install nonexistenttool... This will simulate an install then fail check.' && touch /tmp/nonexistenttool_installed" 
+    tags: ["test", "dummy"]

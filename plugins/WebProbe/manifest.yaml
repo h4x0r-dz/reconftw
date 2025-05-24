@@ -1,0 +1,60 @@
+plugin:
+  name: "WebProbe"
+  version: "0.1.0"
+  author: "Framework AI"
+  description: "Probes hosts for live web servers, detects technologies, and identifies WAFs."
+  type: "reconnaissance"
+
+dependencies:
+  tools:
+    - "httpx"
+    - "wafw00f" # Web Application Firewall detection
+
+provides:
+  - "live_web_servers_http_file" # List of http://host:port
+  - "live_web_servers_https_file" # List of https://host:port
+  - "live_web_servers_all_file" # Combined list
+  - "web_server_details_jsonl_file" # httpx -json output with tech, status, etc.
+  - "web_server_waf_info_file" # Output from wafw00f
+
+parameters:
+  - name: "input_resolved_subdomains_file" # Path to input file (from ReconMaster_Subdomains)
+    description: "Path to a file containing resolved subdomains to probe (one per line)."
+    type: "string"
+    default: "" # Should be provided by workflow from previous step
+  - name: "input_target_domain" # Used for filtering/scoping if needed
+    description: "The primary target domain for context."
+    type: "string"
+    default: ""
+  - name: "probe_http_port"
+    description: "Probe for HTTP on this port."
+    type: "string" # string to allow comma separated list e.g. "80,8080"
+    default: "80"
+  - name: "probe_https_port"
+    description: "Probe for HTTPS on this port."
+    type: "string"
+    default: "443"
+  - name: "probe_custom_ports" # Corresponds to UNCOMMON_PORTS_WEB from reconftw
+    description: "Comma-separated list of additional custom ports to probe."
+    type: "string"
+    default: "" # e.g., "8000,8080,8443"
+  - name: "httpx_threads"
+    description: "Number of threads for httpx."
+    type: "integer"
+    default: 50
+  - name: "httpx_timeout"
+    description: "Timeout for httpx probes in seconds."
+    type: "integer"
+    default: 10
+  - name: "httpx_ratelimit"
+    description: "Max requests per second for httpx."
+    type: "integer"
+    default: 150
+  - name: "httpx_additional_flags" # For tech detection, status code, title etc.
+    description: "Additional flags for httpx (e.g., -title -tech-detect -web-server)."
+    type: "string"
+    default: "-status-code -title -web-server -tech-detect -location -cdn -csp-probe -tls-probe"
+  - name: "enable_waf_detection"
+    description: "Enable WAF detection using wafw00f."
+    type: "boolean"
+    default: true

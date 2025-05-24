@@ -1,0 +1,29 @@
+plugin:
+  name: "ExamplePlugin"
+  version: "0.0.1"
+  author: "Test"
+  description: "An example plugin that now can have tool dependencies."
+dependencies:
+  tools:
+    - "yq"       # Framework critical, should always be present or installed by user first.
+    - "subfinder"  # A common recon tool for testing.
+    - "nonexistenttool" # To test the failure/installation attempt path.
+provides:
+  - "example_output"
+parameters:
+  - name: "specific_param_for_step1"
+    description: "A specific parameter for this plugin."
+    type: "string"
+    default: "default_plugin_value"
+  - name: "another_param"
+    description: "Another parameter."
+    type: "integer"
+    default: 123
+  - name: "some_global_param_for_plugin"
+    description: "A parameter that can be set globally for the plugin."
+    type: "string"
+    default: "plugin_default_for_global"
+  - name: "sleep_duration"
+    description: "How long the plugin should sleep to simulate work."
+    type: "integer"
+    default: 1

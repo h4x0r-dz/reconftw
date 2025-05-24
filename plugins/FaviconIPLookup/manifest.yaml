@@ -1,0 +1,28 @@
+plugin:
+  name: "FaviconIPLookup"
+  version: "0.1.0"
+  author: "Framework AI"
+  description: "Looks up IPs associated with a domain based on favicon hash using favUp.py."
+  type: "reconnaissance_utility"
+
+dependencies:
+  tools:
+    - "python3" 
+    - "favup_dependencies" # This custom entry will ensure favUp.py and its venv are set up
+
+provides:
+  - "favicon_related_ips_file" # Path to the file containing IPs found
+
+parameters:
+  - name: "target_domain"
+    description: "The target domain for favicon analysis."
+    type: "string"
+    default: ""
+  - name: "favup_script_path"
+    description: "Path to the favUp.py script."
+    type: "string"
+    default: "tools/fav-up/favUp.py" # Default path after tool_manager installs it
+  - name: "favup_venv_python"
+    description: "Path to python interpreter in favUp's virtual environment."
+    type: "string"
+    default: "tools/fav-up/venv/bin/python3" # Default path after tool_manager installs it
