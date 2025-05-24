@@ -1,0 +1,191 @@
+plugin:
+  name: "OsintModule"
+  version: "0.3.0" # Updated version
+  author: "Framework AI"
+  description: "Comprehensive OSINT module for domain/IP analysis, leak detection, and misconfiguration checks."
+  type: "reconnaissance"
+
+dependencies:
+  tools: 
+    - "whois"
+    - "curl"
+    - "jq"
+    - "python3"
+    - "gitdorks_go" 
+    - "enumerepo"   
+    - "gitleaks"    
+    - "trufflehog"  
+    - "metafinder"  
+    - "anew"        
+    - "unfurl"      
+    # New for v0.3.0
+    - "porch-pirate" # For apileaks
+    - "swaggerspy"   # For apileaks (assuming a Go install or direct binary)
+    - "emailfinder"  # For emails_leaks
+    - "leaksearch"   # For emails_leaks (assuming a Go install or direct binary for main script)
+    - "misconfig-mapper" # For third_party_misconfigs
+    - "spoofy"       # For spoof_check (assuming a Go install or direct binary)
+
+provides: 
+  - "domain_whois_info"
+  - "google_dorks_results"
+  - "github_dorks_results"
+  - "github_repo_secrets"
+  - "metadata_analysis_results"
+  # New for v0.3.0
+  - "api_leaks_results"
+  - "email_leak_results" # Combined emails and password leaks
+  - "third_party_misconfig_results"
+  - "spoof_check_results"
+  - "ip_whois_results" # For ip_info task
+
+parameters:
+  - name: "target_domain" # Can also be an IP for ip_info
+    description: "The primary domain or IP target for OSINT."
+    type: "string"
+    default: ""
+  - name: "company_name" 
+    description: "Company name associated with the target."
+    type: "string"
+    default: ""
+
+  # Domain Info Task (existing)
+  - name: "enable_domain_info"
+    description: "Enable Domain Whois Info gathering."
+    type: "boolean"
+    default: true
+  - name: "whoisxml_api_key" # Used by domain_info and ip_info
+    description: "API key for WhoisXMLAPI (optional)."
+    type: "string"
+    default: "" 
+
+  # Google Dorks Task (existing)
+  - name: "enable_google_dorks"
+    description: "Enable Google Dorking."
+    type: "boolean"
+    default: true
+  - name: "dorks_hunter_path"
+    description: "Path to the dorks_hunter.py script."
+    type: "string"
+    default: "tools/dorks_hunter/dorks_hunter.py" 
+  - name: "dorks_hunter_venv_python"
+    description: "Path to python executable within dorks_hunter's virtual environment."
+    type: "string"
+    default: "tools/dorks_hunter/venv/bin/python3"
+
+  # GitHub Dorks Task (existing)
+  - name: "enable_github_dorks"
+    description: "Enable GitHub Dorking using gitdorks_go."
+    type: "boolean"
+    default: true
+  - name: "github_tokens_file" 
+    description: "Path to file containing GitHub API token(s)."
+    type: "string"
+    default: "~/.config/reconftw/github_tokens.txt" 
+  - name: "deep_scan_mode" 
+    description: "Enable deep scan mode (larger dork list for gitdorks_go)."
+    type: "boolean"
+    default: false
+  - name: "gitdorks_go_tool_path" 
+    description: "Full path to the gitdorks_go executable."
+    type: "string"
+    default: "gitdorks_go" 
+  - name: "gitdorks_smalldorks_file"
+    description: "Path to the small dorks file for gitdorks_go."
+    type: "string"
+    default: "tools/gitdorks_go/Dorks/smalldorks.txt" 
+  - name: "gitdorks_mediumdorks_file"
+    description: "Path to the medium dorks file for gitdorks_go."
+    type: "string"
+    default: "tools/gitdorks_go/Dorks/medium_dorks.txt" 
+  
+  # GitHub Repos Task (existing)
+  - name: "enable_github_repos"
+    description: "Enable GitHub repository enumeration and secret scanning."
+    type: "boolean"
+    default: true
+
+  # Metadata Analysis Task (existing)
+  - name: "enable_metadata"
+    description: "Enable metadata analysis using metafinder."
+    type: "boolean"
+    default: true
+  - name: "metafinder_limit"
+    description: "Limit for metafinder results."
+    type: "integer"
+    default: 100
+
+  # --- New Task Parameters for v0.3.0 ---
+  # API Leaks Task
+  - name: "enable_apileaks"
+    description: "Enable API leak detection (Postman, Swagger)."
+    type: "boolean"
+    default: true
+  - name: "swaggerspy_path" # Assuming SwaggerSpy is a script
+    description: "Path to the SwaggerSpy.py script."
+    type: "string"
+    default: "tools/SwaggerSpy/SwaggerSpy.py"
+  - name: "swaggerspy_venv_python"
+    description: "Path to python executable within SwaggerSpy's virtual environment."
+    type: "string"
+    default: "tools/SwaggerSpy/venv/bin/python3"
+
+  # Emails & Leaks Task
+  - name: "enable_emails_leaks"
+    description: "Enable email gathering and password leak checking."
+    type: "boolean"
+    default: true
+  - name: "leaksearch_path" # Assuming LeakSearch is a script
+    description: "Path to the LeakSearch.py script."
+    type: "string"
+    default: "tools/LeakSearch/LeakSearch.py"
+  - name: "leaksearch_venv_python"
+    description: "Path to python executable within LeakSearch's virtual environment."
+    type: "string"
+    default: "tools/LeakSearch/venv/bin/python3"
+  - name: "leaksearch_max_concurrent"
+    description: "Max concurrent requests for LeakSearch."
+    type: "integer"
+    default: 5
+
+  # Third Party Misconfigs Task
+  - name: "enable_third_party_misconfigs"
+    description: "Enable third-party misconfiguration checks using misconfig-mapper."
+    type: "boolean"
+    default: true
+  - name: "company_name_for_misconfig" # Specific for misconfig-mapper if different from general company_name
+    description: "Company name for misconfig-mapper (if different from global company_name)."
+    type: "string"
+    default: "" 
+  # misconfig-mapper assumed to be a Go binary installed via tool_db.yaml
+
+  # Spoof Check Task
+  - name: "enable_spoof_check"
+    description: "Enable email spoofing checks using Spoofy."
+    type: "boolean"
+    default: true
+  - name: "spoofy_path" # Assuming Spoofy is a script
+    description: "Path to the spoofy.py script."
+    type: "string"
+    default: "tools/Spoofy/spoofy.py"
+  - name: "spoofy_venv_python"
+    description: "Path to python executable within Spoofy's virtual environment."
+    type: "string"
+    default: "tools/Spoofy/venv/bin/python3"
+
+  # IP Info Task
+  - name: "enable_ip_info" # For IP-specific lookups if target_domain is an IP
+    description: "Enable IP address information gathering (use if target is an IP)."
+    type: "boolean"
+    default: true
+  # Uses whoisxml_api_key from domain_info if available.
+  
+  # Placeholders (existing)
+  - name: "enable_email_gathering"
+    description: "Enable Email Gathering (placeholder - largely covered by emails_leaks now)."
+    type: "boolean"
+    default: false
+  - name: "enable_subdomain_enumeration"
+    description: "Enable Subdomain Enumeration (placeholder - can be a separate module or use existing tools)."
+    type: "boolean"
+    default: false

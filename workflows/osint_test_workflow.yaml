@@ -1,0 +1,79 @@
+name: "Extended OSINT Test Workflow"
+description: "Tests the OsintModule plugin with GitHub and Metadata functionalities."
+version: "0.2" # Updated version
+
+global_params:
+  target_domain: "example.com" 
+  company_name: "Example Inc" # For GitHub repo searches
+  OsintModule: 
+    enable_domain_info: true
+    enable_google_dorks: true
+    enable_github_dorks: true  # Enable GitHub Dorks
+    enable_github_repos: true  # Enable GitHub Repos
+    enable_metadata: true      # Enable Metadata analysis
+    # github_tokens_file: "~/.config/reconftw/github_tokens.txt" # Using default from plugin
+    # dorks_hunter_path: "tools/dorks_hunter/dorks_hunter.py" # Using default
+    # dorks_hunter_venv_python: "tools/dorks_hunter/venv/bin/python3" # Using default
+    # gitdorks_go_tool_path: "gitdorks_go" # Assuming in PATH or default location
+    # gitdorks_smalldorks_file: "tools/gitdorks_go/Dorks/smalldorks.txt" # Using default
+    # gitdorks_mediumdorks_file: "tools/gitdorks_go/Dorks/medium_dorks.txt" # Using default
+    deep_scan_mode: false # Use small dorks list for gitdorks_go by default
+    metafinder_limit: 50  # Smaller limit for testing
+
+steps:
+  - id: "osint_full_scan_default_target"
+    plugin: "OsintModule"
+    description: "Perform all enabled OSINT tasks on the global target (example.com)."
+    params: {
+      # target_domain will use global_params.target_domain
+      # company_name will use global_params.company_name
+      # All enable flags will use global_params.OsintModule settings (all true by default here)
+    }
+
+  - id: "osint_github_dorks_deep_scan"
+    plugin: "OsintModule"
+    description: "Perform GitHub Dorks with deep scan mode on 'another.example.com'."
+    params:
+      target_domain: "another.example.com"
+      company_name: "Another Example LLC"
+      enable_domain_info: false
+      enable_google_dorks: false
+      enable_github_dorks: true
+      enable_github_repos: false 
+      enable_metadata: false
+      deep_scan_mode: true # Override for this step
+      # Ensure your GITHUB_TOKENS_FILE is set up for this to work effectively
+
+  - id: "osint_no_github_scanning"
+    plugin: "OsintModule"
+    description: "Perform OSINT without any GitHub scanning on 'nogithub.example.com'."
+    params:
+      target_domain: "nogithub.example.com"
+      enable_domain_info: true
+      enable_google_dorks: true
+      enable_github_dorks: false # Disable GitHub Dorks
+      enable_github_repos: false # Disable GitHub Repos
+      enable_metadata: true
+
+  - id: "osint_metadata_only_large_limit"
+    plugin: "OsintModule"
+    description: "Perform only metadata analysis with a larger limit on 'metadata.example.com'."
+    params:
+      target_domain: "metadata.example.com"
+      enable_domain_info: false
+      enable_google_dorks: false
+      enable_github_dorks: false
+      enable_github_repos: false
+      enable_metadata: true
+      metafinder_limit: 200 # Larger limit for this specific step
+  
+  - id: "step_after_osint_extended" 
+    plugin: "ExamplePlugin" 
+    description: "An example plugin step running after extended OSINT tasks."
+    params:
+      specific_param_for_step1: "post_extended_osint_value"
+      sleep_duration: 1
+    required_data: 
+      osint_gh_dorks: "osint_full_scan_default_target.github_dorks_file" # Conceptual dependency
+      # Note: The actual key in results.json for github_dorks_file might be slightly different based on OsintModule.sh implementation
+      # e.g., "github_dorks_results_file" or similar. Adjust as per OsintModule's results.json structure.

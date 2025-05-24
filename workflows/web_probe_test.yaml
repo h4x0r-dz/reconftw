@@ -1,0 +1,61 @@
+name: "Web Probing Test Workflow"
+description: "Tests the WebProbe plugin by first running ReconMaster_Subdomains."
+version: "0.1"
+
+global_params:
+  target_domain: "default.example.com" # This will be overridden by step params below
+  # Global settings for ReconMaster_Subdomains, if not overridden by step
+  ReconMaster_Subdomains:
+    enable_passive_enum: true
+    enable_crt_enum: false # Keep it minimal for faster test
+    enable_tls_enum: false
+    enable_active_resolve: true
+    enable_noerror_enum: false
+    enable_bruteforce_enum: false
+    enable_permutation_enum: false
+    enable_regex_permutation_enum: false
+    enable_dns_record_enum: false
+    enable_recursive_passive_enum: false
+    enable_recursive_brute_enum: false
+    enable_scraping_enum: false
+    enable_analytics_enum: false
+  # Global settings for WebProbe, if not overridden by step
+  WebProbe:
+    probe_http_port: "80"
+    probe_https_port: "443"
+    enable_waf_detection: true
+
+steps:
+  - id: "subdomain_enum_for_webprobe"
+    plugin: "ReconMaster_Subdomains"
+    description: "Perform minimal subdomain enumeration for web-target.com."
+    params:
+      target_domain: "web-target.com" # Workflow specific target for this step
+      # Override global ReconMaster_Subdomains settings to make it run faster for testing
+      enable_passive_enum: true 
+      enable_crt_enum: false
+      enable_tls_enum: false
+      enable_active_resolve: true # Need this to get some resolved domains
+      enable_noerror_enum: false
+      enable_bruteforce_enum: false
+      enable_permutation_enum: false
+      enable_regex_permutation_enum: false
+      enable_dns_record_enum: false
+      enable_recursive_passive_enum: false
+      enable_recursive_brute_enum: false
+      enable_scraping_enum: false
+      enable_analytics_enum: false
+
+
+  - id: "run_web_probe"
+    plugin: "WebProbe"
+    description: "Probe identified subdomains for web servers on web-target.com."
+    required_data:
+      # This tells core.sh to get the output path from the previous step's results.json
+      # The key "input_resolved_subdomains_file" for WebProbe plugin will be populated with this path.
+      input_resolved_subdomains_file: "subdomain_enum_for_webprobe.resolved_subdomains_file"
+    params:
+      input_target_domain: "web-target.com" # Pass the target domain for context
+      probe_custom_ports: "8080,8443" # Test custom port probing
+      enable_waf_detection: true
+      # httpx_additional_flags: "-status-code -title -web-server -tech-detect" # Example override if needed

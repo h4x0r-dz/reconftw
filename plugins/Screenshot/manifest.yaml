@@ -1,0 +1,39 @@
+plugin:
+  name: "Screenshot"
+  version: "0.1.0"
+  author: "Framework AI"
+  description: "Takes screenshots of live web applications."
+  type: "reconnaissance_utility" 
+
+dependencies:
+  tools:
+    - "nuclei" # If using nuclei for screenshots
+    # - "gowitness" # Example if using gowitness
+    # - "aquatone"  # Example if using aquatone
+
+provides:
+  - "screenshots_directory" # Path to the directory containing screenshot files
+  - "screenshot_summary_file" # Optional: A file listing successfully screenshotted URLs
+
+parameters:
+  - name: "input_live_web_servers_file" # Path to input file (e.g., from WebProbe)
+    description: "Path to a file containing live web server URLs (http/https, one per line)."
+    type: "string"
+    default: "" # Should be provided by workflow
+  - name: "screenshot_tool"
+    description: "Specify the tool to use for screenshots (nuclei, gowitness, aquatone)."
+    type: "string"
+    default: "nuclei"
+  - name: "nuclei_screenshot_threads"
+    description: "Threads for Nuclei screenshotting."
+    type: "integer"
+    default: 10
+  - name: "nuclei_screenshot_timeout"
+    description: "Timeout for Nuclei screenshotting per host in seconds."
+    type: "integer"
+    default: 30 
+  # Example Gowitness param (not fully implemented unless requested)
+  # - name: "gowitness_delay"
+  #   description: "Delay between taking screenshots with gowitness."
+  #   type: "integer"
+  #   default: 0

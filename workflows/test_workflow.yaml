@@ -1,0 +1,46 @@
+name: "Parallel Test Workflow with Errors"
+description: "A test workflow for parallel execution, including error handling and signal trapping tests."
+version: "0.3"
+
+global_params:
+  target_domain: "parallel.example.com"
+  ExamplePlugin: # Global params specific to ExamplePlugin
+    some_global_param_for_plugin: "global_parallel_test"
+
+steps:
+  - id: "step_A_long" # Independent, 5s
+    plugin: "ExamplePlugin"
+    description: "Step A - Long running (simulates 5s work)"
+    params: { specific_param_for_step1: "valA_long", another_param: 1, sleep_duration: 5 }
+
+  - id: "step_B_short" # Independent, 1s
+    plugin: "ExamplePlugin"
+    description: "Step B - Short (simulates 1s work)"
+    params: { specific_param_for_step1: "valB_short", another_param: 2, sleep_duration: 1 }
+
+  - id: "step_C_error" # Intentionally causes an error, 1s
+    plugin: "ExamplePlugin"
+    description: "Step C - Intentionally causes an error in the plugin."
+    params: { specific_param_for_step1: "valC_error", another_param: 3, sleep_duration: 1, force_error: true }
+
+  - id: "step_D_after_error" # Depends on C (error step), 2s. Should not run if C fails.
+    plugin: "ExamplePlugin"
+    description: "Step D - Depends on C (error step) (simulates 2s work)"
+    params: { specific_param_for_step1: "valD_after_error", another_param: 4, sleep_duration: 2 }
+    required_data:
+      input_C: "step_C_error.results_json" # Conceptual dependency
+
+  - id: "step_E_independent_medium" # Independent, 3s
+    plugin: "ExamplePlugin"
+    description: "Step E - Independent medium duration (simulates 3s work)"
+    params: { specific_param_for_step1: "valE_medium", another_param: 5, sleep_duration: 3 }
+
+  - id: "step_F_nonexistent_plugin" # NonExistentPlugin, to test core error handling
+    plugin: "NonExistentPlugin"
+    description: "Step F - Uses a plugin that doesn't exist."
+    params: {}
+
+  - id: "step_G_after_nonexistent" # Independent, 1s, after non-existent plugin step
+    plugin: "ExamplePlugin"
+    description: "Step G - Independent, after non-existent plugin (simulates 1s work)"
+    params: { specific_param_for_step1: "valG_workflow", another_param: 7, sleep_duration: 1 }
