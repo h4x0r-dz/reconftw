@@ -785,7 +785,6 @@ function subdomains_full() {
 		sub_brute
 		sub_permut
 		sub_regex_permut
-		sub_ia_permut
 		sub_recursive_passive
 		sub_recursive_brute
 		sub_dns
@@ -1835,87 +1834,6 @@ function sub_regex_permut() {
 
 }
 
-function sub_ia_permut() {
-
-	# Create necessary directories
-	if ! mkdir -p .tmp subdomains; then
-		printf "%b[!] Failed to create directories.%b\n" "$bred" "$reset"
-		return 1
-	fi
-
-	# Check if the function should run
-	if { [[ ! -f "$called_fn_dir/.${FUNCNAME[0]}" ]] || [[ $DIFF == true ]]; } && [[ $SUBIAPERMUTE == true ]]; then
-		start_subfunc "${FUNCNAME[0]}" "Running: Permutations by IA analysis"
-
-		subwiz -i subdomains/subdomains.txt --no-resolve -o .tmp/subwiz.txt 2>>"$LOGFILE" >/dev/null
-
-		# Resolve the generated domains
-		if [[ $AXIOM != true ]]; then
-			if ! resolvers_update_quick_local; then
-				printf "%b[!] Failed to update resolvers locally.%b\n" "$bred" "$reset"
-				return 1
-			fi
-
-			if [[ -s ".tmp/subwiz.txt" ]]; then
-				puredns resolve ".tmp/subwiz.txt" -w .tmp/subwiz_resolved.txt -r "$resolvers" --resolvers-trusted "$resolvers_trusted" \
-					-l "$PUREDNS_PUBLIC_LIMIT" --rate-limit-trusted "$PUREDNS_TRUSTED_LIMIT" \
-					--wildcard-tests "$PUREDNS_WILDCARDTEST_LIMIT" --wildcard-batch "$PUREDNS_WILDCARDBATCH_LIMIT" \
-					2>>"$LOGFILE" >/dev/null
-			fi
-		else
-			if ! resolvers_update_quick_axiom; then
-				printf "%b[!] Failed to update resolvers on Axiom.%b\n" "$bred" "$reset"
-				return 1
-			fi
-
-			if [[ -s ".tmp/subwiz.txt" ]]; then
-				axiom-scan ".tmp/subwiz.txt" -m puredns-resolve \
-					-r /home/op/lists/resolvers.txt --resolvers-trusted /home/op/lists/resolvers_trusted.txt \
-					--wildcard-tests "$PUREDNS_WILDCARDTEST_LIMIT" --wildcard-batch "$PUREDNS_WILDCARDBATCH_LIMIT" \
-					-o .tmp/subwiz_resolved.txt $AXIOM_EXTRA_ARGS \
-					2>>"$LOGFILE" >/dev/null
-			fi
-		fi
-
-		# Process the resolved domains
-		if [[ -s ".tmp/subwiz_resolved.txt" ]]; then
-			if [[ -s $outOfScope_file ]]; then
-				if ! deleteOutScoped "$outOfScope_file" .tmp/subwiz_resolved.txt; then
-					printf "%b[!] deleteOutScoped command failed.%b\n" "$bred" "$reset"
-				fi
-			fi
-
-			if [[ $INSCOPE == true ]]; then
-				if ! check_inscope .tmp/subwiz_resolved.txt 2>>"$LOGFILE" >/dev/null; then
-					printf "%b[!] check_inscope command failed.%b\n" "$bred" "$reset"
-				fi
-			fi
-
-			if ! NUMOFLINES=$(grep "\.$domain$\|^$domain$" .tmp/subwiz_resolved.txt 2>>"$LOGFILE" |
-				grep -E '^([a-zA-Z0-9\.\-]+\.)+[a-zA-Z]{1,}$' |
-				anew subdomains/subdomains.txt |
-				sed '/^$/d' |
-				wc -l); then
-				printf "%b[!] Failed to count new subdomains.%b\n" "$bred" "$reset"
-				NUMOFLINES=0
-			fi
-		else
-			NUMOFLINES=0
-		fi
-
-		end_subfunc "${NUMOFLINES} new subs (permutations by IA)" "${FUNCNAME[0]}"
-
-	else
-		if [[ $SUBIAPERMUTE == false ]]; then
-			printf "\n%b[%s] %s skipped due to mode or defined in reconftw.cfg.%b\n" \
-				"$yellow" "$(date +'%Y-%m-%d %H:%M:%S')" "${FUNCNAME[0]}" "$reset"
-		else
-			printf "%b[%s] %s has already been processed. To force execution, delete:\n    %s/.%s%b\n\n" \
-				"$yellow" "$(date +'%Y-%m-%d %H:%M:%S')" "${FUNCNAME[0]}" "$called_fn_dir" "/.${FUNCNAME[0]}" "$reset"
-		fi
-	fi
-
-}
 
 function sub_recursive_passive() {
 
