@@ -100,7 +100,6 @@ declare -A pipxtools=(
 	["xnldorker"]="xnl-h4ck3r/xnldorker"
 	["porch-pirate"]="MandConsultingGroup/porch-pirate"
 	["p1radup"]="iambouali/p1radup"
-	["subwiz"]="hadriansecurity/subwiz"
 )
 
 # Declare repositories and their paths
