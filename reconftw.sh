@@ -17,44 +17,9 @@ if [[ $OSTYPE == "darwin"* && $BASH != "/opt/homebrew/bin/bash" ]]; then
 	exec /opt/homebrew/bin/bash "$0" "$@"
 fi
 
-function banner_grabber() {
-	local banner_file="${SCRIPTPATH}/banners.txt"
-
-	# Check if the banner file exists
-	if [[ ! -f $banner_file ]]; then
-		echo "Banner file not found: $banner_file" >&2
-		return 1
-	fi
-
-	# Source the banner file
-	source "$banner_file"
-
-	# Collect all banner variable names
-	mapfile -t banner_vars < <(compgen -A variable | grep '^banner[0-9]\+$')
-
-	# Check if any banners are available
-	if [[ ${#banner_vars[@]} -eq 0 ]]; then
-		echo "No banners found in $banner_file" >&2
-		return 1
-	fi
-
-	# Select a random banner
-	local rand_index=$((RANDOM % ${#banner_vars[@]}))
-	local banner_var="${banner_vars[$rand_index]}"
-	local banner_code="${!banner_var}"
-
-	# Output the banner code
-	printf "%b\n" "$banner_code"
-}
-
 function banner() {
-	local banner_code
-	if banner_code=$(banner_grabber); then
-		printf "\n%b%s" "$bgreen" "$banner_code"
-		printf "\n %s                                 by @six2dez%b\n" "$reconftw_version" "$reset"
-	else
-		printf "\n%bFailed to load banner.%b\n" "$bgreen" "$reset"
-	fi
+	printf "\n%breconFTW%b\n" "$bgreen" "$reset"
+	printf "\n %s                                 by @six2dez%b\n" "$reconftw_version" "$reset"
 }
 
 ###############################################################################################################
