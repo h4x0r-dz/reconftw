@@ -1133,6 +1133,17 @@ function sub_dns() {
 	mkdir -p .tmp subdomains hosts
 
 	if [[ ! -f "$called_fn_dir/.${FUNCNAME[0]}" ]] || [[ $DIFF == true ]]; then
+		
+		# Check subdomain count and skip if more than limit
+		if [[ -s "subdomains/subdomains.txt" ]]; then
+			subdomain_count=$(wc -l < "subdomains/subdomains.txt")
+			if [[ $subdomain_count -gt $SUBDNS_LIMIT ]]; then
+				printf "\n%b[%s] Skipping DNS Subdomain Enumeration: Too many subdomains (%s > %s). This would take too long.%b\n" \
+					"$yellow" "$(date +'%Y-%m-%d %H:%M:%S')" "$subdomain_count" "$SUBDNS_LIMIT" "$reset"
+				touch "$called_fn_dir/.${FUNCNAME[0]}"
+				return 0
+			fi
+		fi
 		start_subfunc "${FUNCNAME[0]}" "Running: DNS Subdomain Enumeration and PTR search"
 
 		if [[ -s "subdomains/subdomains.txt" ]]; then
